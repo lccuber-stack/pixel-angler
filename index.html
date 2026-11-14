@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -55,7 +55,7 @@
 
     .hud-group {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
     }
 
@@ -105,7 +105,7 @@
       top: 14px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(15, 32, 22, 0.9);
+      background: rgba(15, 32, 22, 0.92);
       border: 2px solid #88c070;
       padding: 8px 14px;
       border-radius: 6px;
@@ -123,6 +123,31 @@
       border-color: #ffdd55;
       color: #ffdd55;
       animation: pulse 0.25s infinite alternate;
+    }
+
+    /* Crisp HTML label under the tension bar */
+    #tension-label {
+      position: absolute;
+      top: 118px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 32, 22, 0.92);
+      border: 2px solid #88c070;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #e0f8d0;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 5;
+      display: none;
+    }
+
+    #tension-label.pulling {
+      background: #8b1e1e;
+      border-color: #ffdd55;
+      color: #ffdd55;
     }
 
     @keyframes pulse {
@@ -259,107 +284,108 @@
   <div id="app">
     <div id="hud">
       <div class="hud-group">
-        <span class="badge" id="hud-casts">KAST: 10/10</span>
+        <span class="badge" id="hud-casts">CASTS: 10/10</span>
         <span class="badge" id="hud-coins">0 G</span>
       </div>
       <div class="hud-group">
-        <button class="btn-small" id="btn-sound">LJUD: PÅ</button>
-        <button class="btn-small" id="btn-book">FISKEBOK</button>
-        <button class="btn-small" id="btn-shop">BETEN</button>
+        <button class="btn-small" id="btn-sound">SFX: ON</button>
+        <button class="btn-small" id="btn-book">FISH LOG</button>
+        <button class="btn-small" id="btn-shop">BAIT</button>
       </div>
     </div>
 
     <div id="canvas-wrap">
       <canvas id="gameCanvas"></canvas>
-      <div id="status-banner">SVEP UPPÅT FÖR ATT KASTA</div>
+      <div id="status-banner">SWIPE UP TO CAST</div>
+      <div id="tension-label">DISTANCE: 20m</div>
 
       <div id="catch-popup">
-        <h3 id="catch-title">FÅNGST!</h3>
+        <h3 id="catch-title">CATCH!</h3>
         <canvas id="fishPreview" width="96" height="48" style="margin: 8px auto; background:#183020; border:2px solid #306850;"></canvas>
-        <p id="catch-species">Abborre</p>
+        <p id="catch-species">Perch</p>
         <p id="catch-weight" style="font-weight:bold; color:#88c070;">1.45 kg</p>
         <p id="catch-reward" style="color:#ffdd55;">+29 G</p>
-        <div id="catch-record" class="new-record" style="display:none;">NYTT REKORD!</div>
-        <button class="btn-primary" id="btn-continue" style="margin-top:12px; padding:8px;">FORTSÄTT</button>
+        <div id="catch-record" class="new-record" style="display:none;">NEW RECORD!</div>
+        <button class="btn-primary" id="btn-continue" style="margin-top:12px; padding:8px;">CONTINUE</button>
       </div>
     </div>
 
-    <div id="bottom-bar" id="hint-text">
-      Dra fingret uppåt över sjön för att kasta ut betet
+    <div id="bottom-bar">
+      Swipe up across the lake to cast your line
     </div>
 
-    <!-- Fiskebok Modal -->
+    <!-- Fish Log Modal -->
     <div class="modal" id="modal-book">
-      <h2>FISKEBOK & REKORD</h2>
+      <h2>FISH LOG &amp; RECORDS</h2>
       <div id="book-list"></div>
       <div class="card" style="margin-top:8px;">
         <div class="card-info">
-          <h3>Bästa fiskepass (10 kast)</h3>
-          <p id="best-session-text">0.00 kg totalt</p>
+          <h3>Best Session (10 casts)</h3>
+          <p id="best-session-text">0.00 kg total</p>
         </div>
       </div>
-      <button class="btn-primary" id="close-book">STÄNG</button>
+      <button class="btn-primary" id="close-book">CLOSE</button>
     </div>
 
-    <!-- Beten / Butik Modal -->
+    <!-- Bait / Shop Modal -->
     <div class="modal" id="modal-shop">
-      <h2>BETEN & UTRUSTNING</h2>
-      <p style="text-align:center; font-size:12px; margin-top:0; color:#88c070;">Bättre beten lockar tyngre fiskar!</p>
+      <h2>BAIT &amp; TACKLE</h2>
+      <p style="text-align:center; font-size:12px; margin-top:0; color:#88c070;">Better bait attracts heavier trophy fish!</p>
       <div id="shop-list"></div>
-      <button class="btn-primary" id="close-shop">STÄNG</button>
+      <button class="btn-primary" id="close-shop">CLOSE</button>
     </div>
 
-    <!-- Sammanfattning efter 10 kast -->
+    <!-- End of Day Summary Modal -->
     <div class="modal" id="modal-summary">
-      <h2>FISKEDAGEN ÄR SLUT!</h2>
+      <h2>FISHING DAY OVER!</h2>
       <div class="card">
         <div class="card-info">
-          <h3>Total fångstvikt</h3>
+          <h3>Total Catch Weight</h3>
           <p id="sum-weight" style="font-size:16px; color:#ffdd55; font-weight:bold;">0.00 kg</p>
         </div>
       </div>
       <div class="card">
         <div class="card-info">
-          <h3>Antal fångade fiskar</h3>
-          <p id="sum-count">0 st</p>
+          <h3>Fish Caught</h3>
+          <p id="sum-count">0</p>
         </div>
       </div>
       <div class="card">
         <div class="card-info">
-          <h3>Intjänade mynt</h3>
+          <h3>Coins Earned</h3>
           <p id="sum-coins" style="color:#ffdd55;">+0 G</p>
         </div>
       </div>
-      <button class="btn-primary" id="btn-new-day">NY FISKEDAG (10 KAST)</button>
+      <button class="btn-primary" id="btn-new-day">NEW DAY (10 CASTS)</button>
     </div>
   </div>
 
   <script>
     (() => {
-      // --- DATA & KONFIGURATION ---
+      // --- DATA & CONFIGURATION ---
       const STORAGE_KEY = 'pixel_angler_save_v1';
 
       const FISH_TYPES = [
-        { id: 'perch', name: 'Abborre', minW: 0.25, maxW: 2.2, speed: 1.0, power: 1.0, color: '#4a8c3c', stripe: '#1c3818', fin: '#d9483b', minDist: 0.1 },
-        { id: 'bream', name: 'Braxen', minW: 0.6, maxW: 3.8, speed: 0.8, power: 1.15, color: '#9aa899', stripe: '#647063', fin: '#525c51', minDist: 0.2 },
-        { id: 'pike', name: 'Gädda', minW: 1.2, maxW: 11.5, speed: 1.35, power: 1.45, color: '#587836', stripe: '#b8cc68', fin: '#c95b36', minDist: 0.35 },
-        { id: 'zander', name: 'Gös', minW: 1.0, maxW: 8.5, speed: 1.25, power: 1.35, color: '#7a8a78', stripe: '#3b453a', fin: '#a3b0a2', minDist: 0.5 },
-        { id: 'trout', name: 'Insjööring', minW: 0.8, maxW: 6.4, speed: 1.55, power: 1.5, color: '#b59d7e', stripe: '#2b241d', fin: '#d97b66', minDist: 0.65 }
+        { id: 'perch', name: 'Perch', minW: 0.25, maxW: 2.2, speed: 1.0, power: 1.0, color: '#4a8c3c', stripe: '#1c3818', fin: '#d9483b', minDist: 0.1 },
+        { id: 'bream', name: 'Bream', minW: 0.6, maxW: 3.8, speed: 0.8, power: 1.15, color: '#9aa899', stripe: '#647063', fin: '#525c51', minDist: 0.2 },
+        { id: 'pike', name: 'Northern Pike', minW: 1.2, maxW: 11.5, speed: 1.35, power: 1.45, color: '#587836', stripe: '#b8cc68', fin: '#c95b36', minDist: 0.35 },
+        { id: 'zander', name: 'Zander', minW: 1.0, maxW: 8.5, speed: 1.25, power: 1.35, color: '#7a8a78', stripe: '#3b453a', fin: '#a3b0a2', minDist: 0.5 },
+        { id: 'trout', name: 'Lake Trout', minW: 0.8, maxW: 6.4, speed: 1.55, power: 1.5, color: '#b59d7e', stripe: '#2b241d', fin: '#d97b66', minDist: 0.65 }
       ];
 
       const BAITS = [
-        { id: 'worm', name: 'Metmask', price: 0, bonus: 1.0, desc: 'Klassiker. Funkar till det mesta.' },
-        { id: 'shrimp', name: 'Skalad Räka', price: 80, bonus: 1.25, desc: 'Oemotståndlig för stor abborre & gös.' },
-        { id: 'jig', name: 'Gummijigg (Gul)', price: 220, bonus: 1.55, desc: 'Lockar rovfisk på djupt vatten.' },
-        { id: 'spinner', name: 'Guldspinnare', price: 500, bonus: 2.0, desc: 'Mästerbete för tunga troféfiskar.' }
+        { id: 'worm', name: 'Earthworm', price: 0, bonus: 1.0, desc: 'Classic live bait. Works for most fish.' },
+        { id: 'shrimp', name: 'Peeled Shrimp', price: 80, bonus: 1.25, desc: 'Irresistible to big perch & zander.' },
+        { id: 'jig', name: 'Soft Shad Jig', price: 220, bonus: 1.55, desc: 'Attracts deep-water predators.' },
+        { id: 'spinner', name: 'Gold Spinner', price: 500, bonus: 2.0, desc: 'Master lure for heavy trophy fish.' }
       ];
 
       let saveData = {
         coins: 0,
         ownedBaits: ['worm'],
         equippedBait: 'worm',
-        records: {}, // fishId: maxWeight
-        caughtCount: {}, // fishId: count
+        records: {},
+        caughtCount: {},
         bestSessionWeight: 0
       };
 
@@ -371,7 +397,7 @@
             saveData = { ...saveData, ...parsed };
           }
         } catch (e) {
-          console.warn('Kunde inte läsa localStorage', e);
+          console.warn('Could not read localStorage', e);
         }
       }
 
@@ -379,7 +405,7 @@
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
         } catch (e) {
-          console.warn('Kunde inte spara till localStorage', e);
+          console.warn('Could not save to localStorage', e);
         }
       }
 
@@ -463,7 +489,7 @@
         }
       };
 
-      // --- SPELTILLSTÅND ---
+      // --- GAME STATE ---
       const MAX_CASTS = 10;
       let castsLeft = MAX_CASTS;
       let sessionWeight = 0;
@@ -474,19 +500,19 @@
       let state = 'IDLE';
       let stateTimer = 0;
 
-      // Kast & flöte
-      let castDist = 0; // 0.0 till 1.0 (hur långt ut i sjön)
+      // Cast & bobber
+      let castDist = 0;
       let bobberX = 0;
       let bobberY = 0;
       let targetBobberY = 0;
       let castProgress = 0;
       let ripples = [];
 
-      // Aktiv fisk på kroken
+      // Active fish on hook
       let activeFish = null;
-      let fishDistance = 0; // meter kvar att veva in
+      let fishDistance = 0;
       let maxFishDistance = 0;
-      let lineTension = 0; // 0 till 100
+      let lineTension = 0;
       let isReeling = false;
       let fishPulling = false;
       let pullTimer = 0;
@@ -496,17 +522,18 @@
       let touchStartY = null;
       let touchStartTime = 0;
 
-      // --- UI ELEMENT ---
+      // --- UI ELEMENTS ---
       const canvas = document.getElementById('gameCanvas');
       const ctx = canvas.getContext('2d');
       const statusBanner = document.getElementById('status-banner');
+      const tensionLabel = document.getElementById('tension-label');
       const hintText = document.getElementById('bottom-bar');
       const hudCasts = document.getElementById('hud-casts');
       const hudCoins = document.getElementById('hud-coins');
       const catchPopup = document.getElementById('catch-popup');
 
       function updateHUD() {
-        hudCasts.textContent = `KAST: ${castsLeft}/${MAX_CASTS}`;
+        hudCasts.textContent = `CASTS: ${castsLeft}/${MAX_CASTS}`;
         hudCoins.textContent = `${saveData.coins} G`;
       }
 
@@ -516,14 +543,13 @@
         else statusBanner.classList.remove('alert');
       }
 
-      // --- FISKGENERERING ---
+      // --- FISH GENERATION ---
       function generateFish(distRatio) {
         const bait = BAITS.find(b => b.id === saveData.equippedBait) || BAITS[0];
         const available = FISH_TYPES.filter(f => distRatio >= f.minDist - 0.15);
         const pool = available.length > 0 ? available : [FISH_TYPES[0]];
         const template = pool[Math.floor(Math.random() * pool.length)];
 
-        // Vikt påverkas av kastlängd + betesbonus
         const luck = Math.min(1, Math.random() * 0.75 + distRatio * 0.35);
         let weight = template.minW + (template.maxW - template.minW) * Math.pow(luck, 1.4) * (0.85 + bait.bonus * 0.2);
         weight = Math.min(template.maxW * 1.15, Math.max(template.minW, weight));
@@ -536,7 +562,7 @@
         };
       }
 
-      // --- SPELFLÖDE ---
+      // --- GAME FLOW ---
       function startCast(powerRatio) {
         if (state !== 'IDLE' || castsLeft <= 0) return;
         initAudio();
@@ -547,46 +573,47 @@
         state = 'CASTING';
         castProgress = 0;
         sfx.cast();
-        setBanner('KASTAR UT...');
-        hintText.textContent = 'Väntar på att betet ska landa...';
+        setBanner('CASTING...');
+        hintText.textContent = 'Waiting for bait to land...';
       }
 
       function enterWaiting() {
         state = 'WAITING';
         ripples.push({ x: bobberX, y: bobberY, r: 2, alpha: 1 });
         sfx.splash();
-        // Slumpad väntetid på 1.8 - 4.5 sekunder
         stateTimer = 1.8 + Math.random() * 2.7;
-        setBanner('VÄNTAR PÅ NAPP...');
-        hintText.textContent = 'Håll utkik efter när flötet dyker!';
+        setBanner('WAITING FOR BITE...');
+        hintText.textContent = 'Watch closely for the bobber to dip!';
       }
 
       function triggerBite() {
         state = 'BITE';
-        stateTimer = 1.35; // 1.35 sekunder på sig att kroka
+        stateTimer = 1.35;
         activeFish = generateFish(castDist);
         sfx.bite();
         if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-        setBanner('NAPP!! TRYCK NU!', true);
-        hintText.textContent = 'TRYCK PÅ SKÄRMEN FÖR ATT KROKA!';
+        setBanner('BITE!! TAP NOW!', true);
+        hintText.textContent = 'TAP THE SCREEN TO HOOK!';
       }
 
       function hookFish() {
         state = 'REELING';
-        maxFishDistance = Math.round(14 + castDist * 26); // 14 - 40 meter
+        maxFishDistance = Math.round(14 + castDist * 26);
         fishDistance = maxFishDistance;
         lineTension = 35;
         isReeling = true;
         fishPulling = false;
         pullTimer = 1.2;
-        setBanner('VEVA IN FISKEN!');
-        hintText.textContent = 'HÅLL INNE för att veva • SLÄPP när linan blir röd!';
+        tensionLabel.style.display = 'block';
+        setBanner('REEL IT IN!');
+        hintText.textContent = 'HOLD to reel • RELEASE when line turns red!';
       }
 
       function failAttempt(reason) {
         state = 'IDLE';
         activeFish = null;
         isReeling = false;
+        tensionLabel.style.display = 'none';
         sfx.lineSnap();
         if (navigator.vibrate) navigator.vibrate(200);
         setBanner(reason, true);
@@ -598,6 +625,7 @@
       function completeCatch() {
         state = 'POPUP';
         isReeling = false;
+        tensionLabel.style.display = 'none';
         sfx.catchWin();
         if (navigator.vibrate) navigator.vibrate([50, 50, 120]);
 
@@ -620,30 +648,29 @@
         writeSave();
         updateHUD();
 
-        // Visa fångst-popup
         document.getElementById('catch-species').textContent = f.name;
         document.getElementById('catch-weight').textContent = `${f.weight.toFixed(2)} kg`;
         document.getElementById('catch-reward').textContent = `+${reward} G`;
         document.getElementById('catch-record').style.display = isRecord ? 'inline-block' : 'none';
         drawFishSprite(document.getElementById('fishPreview'), f);
         catchPopup.classList.add('active');
-        setBanner('SNYGGT JOBBAT!');
+        setBanner('NICE CATCH!');
       }
 
       function checkEndOfDay() {
         if (castsLeft <= 0) {
           document.getElementById('sum-weight').textContent = `${sessionWeight.toFixed(2)} kg`;
-          document.getElementById('sum-count').textContent = `${sessionCount} st`;
+          document.getElementById('sum-count').textContent = `${sessionCount}`;
           document.getElementById('sum-coins').textContent = `+${sessionCoins} G`;
           document.getElementById('modal-summary').classList.add('active');
-          setBanner('FISKEDAGEN SLUT');
+          setBanner('FISHING DAY OVER');
         } else {
-          setBanner('SVEP UPPÅT FÖR ATT KASTA');
-          hintText.textContent = `Kast kvar: ${castsLeft} • Dra fingret uppåt över sjön`;
+          setBanner('SWIPE UP TO CAST');
+          hintText.textContent = `Casts left: ${castsLeft} • Swipe up across the lake`;
         }
       }
 
-      // --- INPUT HANTERING (TOUCH & MUS) ---
+      // --- INPUT HANDLING (TOUCH & MOUSE) ---
       canvas.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         initAudio();
@@ -665,7 +692,6 @@
           const dt = Math.max(50, performance.now() - touchStartTime);
           touchStartY = null;
           if (dy > 35) {
-            // Svep uppåt detekterat
             const velocity = dy / dt;
             const power = Math.min(1, (dy / 220) * 0.6 + velocity * 0.35);
             startCast(power);
@@ -680,7 +706,7 @@
         isReeling = false;
       });
 
-      // --- KNAPPAR & MODALER ---
+      // --- BUTTONS & MODALS ---
       document.getElementById('btn-continue').addEventListener('click', () => {
         catchPopup.classList.remove('active');
         activeFish = null;
@@ -702,7 +728,7 @@
       document.getElementById('btn-sound').addEventListener('click', (e) => {
         initAudio();
         soundEnabled = !soundEnabled;
-        e.target.textContent = soundEnabled ? 'LJUD: PÅ' : 'LJUD: AV';
+        e.target.textContent = soundEnabled ? 'SFX: ON' : 'SFX: OFF';
       });
 
       document.getElementById('btn-book').addEventListener('click', () => {
@@ -715,13 +741,13 @@
           card.className = 'card' + (rec ? ' owned' : '');
           card.innerHTML = `
             <div class="card-info">
-              <h3>${rec ? f.name : '??? (Ej fångad)'}</h3>
-              <p>${rec ? `Rekord: ${rec.toFixed(2)} kg • Fångade: ${count} st` : 'Kasta längre ut i sjön för att hitta denna art'}</p>
+              <h3>${rec ? f.name : '??? (Not caught)'}</h3>
+              <p>${rec ? `Record: ${rec.toFixed(2)} kg • Caught: ${count}` : 'Cast further out into the lake to find this species'}</p>
             </div>
           `;
           list.appendChild(card);
         });
-        document.getElementById('best-session-text').textContent = `${saveData.bestSessionWeight.toFixed(2)} kg totalt`;
+        document.getElementById('best-session-text').textContent = `${saveData.bestSessionWeight.toFixed(2)} kg total`;
         document.getElementById('modal-book').classList.add('active');
       });
 
@@ -740,12 +766,12 @@
 
           let actionHtml = '';
           if (equipped) {
-            actionHtml = `<span class="badge" style="background:#88c070; color:#0f2016;">VALD</span>`;
+            actionHtml = `<span class="badge" style="background:#88c070; color:#0f2016;">EQUIPPED</span>`;
           } else if (owned) {
-            actionHtml = `<button class="btn-small" data-equip="${b.id}">VÄLJ</button>`;
+            actionHtml = `<button class="btn-small" data-equip="${b.id}">EQUIP</button>`;
           } else {
             const canAfford = saveData.coins >= b.price;
-            actionHtml = `<button class="btn-small" data-buy="${b.id}" ${canAfford ? '' : 'style="opacity:0.45;"'}>KÖP ${b.price} G</button>`;
+            actionHtml = `<button class="btn-small" data-buy="${b.id}" ${canAfford ? '' : 'style="opacity:0.45;"'}>BUY ${b.price} G</button>`;
           }
 
           card.innerHTML = `
@@ -792,10 +818,9 @@
         document.getElementById('modal-shop').classList.remove('active');
       });
 
-      // --- GRAFIK & ANIMATION (PIXEL ART) ---
+      // --- GRAPHICS & ANIMATION (PIXEL ART) ---
       function resizeCanvas() {
         const rect = canvas.parentElement.getBoundingClientRect();
-        // Låg intern upplösning för äkta 8-bitars pixelkänsla
         const scale = 2;
         canvas.width = Math.floor(rect.width / scale);
         canvas.height = Math.floor(rect.height / scale);
@@ -811,29 +836,29 @@
         const cx = w / 2;
         const cy = h / 2;
 
-        // Stjärtfena
+        // Tail fin
         c.fillStyle = fish.fin;
         c.fillRect(cx - 28, cy - 10, 10, 20);
         c.fillRect(cx - 32, cy - 14, 6, 8);
         c.fillRect(cx - 32, cy + 6, 6, 8);
 
-        // Kropp
+        // Body
         c.fillStyle = fish.color;
         c.fillRect(cx - 20, cy - 11, 38, 22);
         c.fillRect(cx + 18, cy - 7, 8, 14);
 
-        // Ränder
+        // Stripes
         c.fillStyle = fish.stripe;
         c.fillRect(cx - 10, cy - 11, 4, 14);
         c.fillRect(cx, cy - 11, 4, 15);
         c.fillRect(cx + 10, cy - 10, 4, 13);
 
-        // Ryggfena & bukfena
+        // Dorsal & pelvic fins
         c.fillStyle = fish.fin;
         c.fillRect(cx - 8, cy - 16, 18, 5);
         c.fillRect(cx - 4, cy + 11, 10, 5);
 
-        // Öga
+        // Eye
         c.fillStyle = '#ffdd55';
         c.fillRect(cx + 14, cy - 5, 4, 4);
         c.fillStyle = '#0f2016';
@@ -846,7 +871,6 @@
       function update(dt) {
         waveOffset += dt * 18;
 
-        // Uppdatera vattenringar
         for (let i = ripples.length - 1; i >= 0; i--) {
           ripples[i].r += dt * 18;
           ripples[i].alpha -= dt * 0.9;
@@ -882,10 +906,9 @@
             ripples.push({ x: bobberX + (Math.random() * 6 - 3), y: bobberY, r: 2, alpha: 0.9 });
           }
           if (stateTimer <= 0) {
-            failAttempt('FISKEN SLAPP!');
+            failAttempt('IT GOT AWAY!');
           }
         } else if (state === 'REELING' && activeFish) {
-          // Fiskens ryck-beteende
           pullTimer -= dt;
           if (pullTimer <= 0) {
             fishPulling = !fishPulling;
@@ -895,7 +918,6 @@
           const pullForce = fishPulling ? (28 * activeFish.power) : (8 * activeFish.power);
 
           if (isReeling) {
-            // Spelaren vevar in
             const reelSpeed = fishPulling ? 2.2 : 6.8;
             fishDistance -= reelSpeed * dt;
             lineTension += (pullForce + 24) * dt;
@@ -906,7 +928,6 @@
               reelSoundTimer = 0.09;
             }
           } else {
-            // Spelaren släpper efter
             if (fishPulling) {
               fishDistance += (2.5 * activeFish.speed) * dt;
             }
@@ -915,7 +936,15 @@
 
           lineTension = Math.max(0, lineTension);
 
-          // Uppdatera flötets/fiskens position visuellt
+          // Update crisp HTML label under tension bar
+          if (fishPulling) {
+            tensionLabel.textContent = 'FISH PULLING! (RELEASE!)';
+            tensionLabel.classList.add('pulling');
+          } else {
+            tensionLabel.textContent = `DISTANCE: ${Math.max(0, Math.ceil(fishDistance))}m`;
+            tensionLabel.classList.remove('pulling');
+          }
+
           const progress = Math.max(0, Math.min(1, fishDistance / maxFishDistance));
           bobberY = (shoreY - 22) - progress * (shoreY - targetBobberY);
           bobberX = w / 2 + Math.sin(performance.now() * 0.015 * activeFish.speed) * (fishPulling ? 18 : 7);
@@ -929,7 +958,7 @@
           }
 
           if (lineTension >= 100) {
-            failAttempt('LINAN GICK AV!');
+            failAttempt('LINE SNAPPED!');
           } else if (fishDistance <= 0) {
             completeCatch();
           }
@@ -942,32 +971,31 @@
         const horizonY = Math.floor(h * 0.24);
         const shoreY = h - 38;
 
-        // 1. Himmel (Game Boy Color retro-nyanser)
+        // 1. Sky
         ctx.fillStyle = '#88c070';
         ctx.fillRect(0, 0, w, horizonY);
 
-        // Sol / Moln i pixelstil
+        // Sun & Clouds
         ctx.fillStyle = '#e0f8d0';
         ctx.fillRect(w - 46, 14, 22, 22);
         ctx.fillRect(24, 18, 34, 8);
         ctx.fillRect(30, 14, 20, 4);
 
-        // Skogssiluett vid horisonten
+        // Treeline
         ctx.fillStyle = '#306850';
         for (let x = 0; x < w; x += 12) {
           const treeH = 10 + ((x * 7) % 14);
           ctx.fillRect(x, horizonY - treeH, 10, treeH);
         }
 
-        // 2. Sjö / Vatten
+        // 2. Lake
         ctx.fillStyle = '#204631';
         ctx.fillRect(0, horizonY, w, shoreY - horizonY);
 
-        // Djupare vattenband
         ctx.fillStyle = '#183625';
         ctx.fillRect(0, horizonY + 18, w, Math.floor((shoreY - horizonY) * 0.45));
 
-        // Animerade vågstreck
+        // Animated waves
         ctx.fillStyle = '#306850';
         for (let row = 0; row < 7; row++) {
           const wy = horizonY + 12 + row * ((shoreY - horizonY - 20) / 7);
@@ -978,7 +1006,7 @@
           }
         }
 
-        // Vattenringar (ripples)
+        // Ripples
         ripples.forEach(rp => {
           ctx.strokeStyle = `rgba(224, 248, 208, ${rp.alpha.toFixed(2)})`;
           ctx.lineWidth = 1;
@@ -987,7 +1015,7 @@
           ctx.stroke();
         });
 
-        // 3. Brygga / Strandkant längst ner
+        // 3. Dock
         ctx.fillStyle = '#3b2818';
         ctx.fillRect(0, shoreY, w, h - shoreY);
         ctx.fillStyle = '#5c3f26';
@@ -995,14 +1023,13 @@
           ctx.fillRect(x, shoreY, 14, 6);
         }
 
-        // 4. Fiskespö & Lina
+        // 4. Rod & Line
         const rodBaseX = Math.floor(w / 2);
         const rodBaseY = h - 4;
         const bend = state === 'REELING' ? (lineTension * 0.28) : 0;
         const rodTipX = Math.floor(w / 2 + (state === 'REELING' ? (bobberX - w / 2) * 0.35 : 6));
         const rodTipY = Math.floor(shoreY - 24 + bend);
 
-        // Spö
         ctx.strokeStyle = '#e0f8d0';
         ctx.lineWidth = 3;
         ctx.beginPath();
@@ -1010,7 +1037,7 @@
         ctx.quadraticCurveTo(rodBaseX + 4, shoreY - 12, rodTipX, rodTipY);
         ctx.stroke();
 
-        // Lina & Flöte
+        // Line & Bobber
         if (state === 'CASTING' || state === 'WAITING' || state === 'BITE' || state === 'REELING') {
           ctx.strokeStyle = '#e0f8d0';
           ctx.lineWidth = 1;
@@ -1019,7 +1046,6 @@
           ctx.lineTo(Math.floor(bobberX), Math.floor(bobberY));
           ctx.stroke();
 
-          // Flöte (dyker under ytan vid BITE)
           const submerge = state === 'BITE' ? 4 : 0;
           const bx = Math.floor(bobberX);
           const by = Math.floor(bobberY + submerge);
@@ -1030,14 +1056,13 @@
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(bx - 3, by, 6, 3);
           } else {
-            // Plask-effekt när flötet är under ytan
             ctx.fillStyle = '#e0f8d0';
             ctx.fillRect(bx - 4, by - 3, 2, 2);
             ctx.fillRect(bx + 3, by - 4, 2, 2);
           }
         }
 
-        // 5. Svep-indikator i IDLE-läge
+        // 5. Swipe indicator in IDLE
         if (state === 'IDLE' && castsLeft > 0) {
           const arrowY = shoreY - 35 - Math.abs(Math.sin(performance.now() * 0.004)) * 12;
           ctx.fillStyle = 'rgba(224, 248, 208, 0.65)';
@@ -1046,31 +1071,22 @@
           ctx.fillRect(w / 2 - 4, arrowY + 2, 8, 3);
         }
 
-        // 6. Spänningsmätare & Avstånd vid drillning (REELING)
+        // 6. Tension bar (REELING)
         if (state === 'REELING') {
           const barW = Math.min(180, w - 40);
           const barH = 12;
           const barX = Math.floor((w - barW) / 2);
-          const barY = 44;
+          const barY = 40;
 
-          // Bakgrund
           ctx.fillStyle = '#08120c';
           ctx.fillRect(barX - 2, barY - 2, barW + 4, barH + 4);
 
-          // Färg baserat på spänning
           if (lineTension < 55) ctx.fillStyle = '#88c070';
           else if (lineTension < 80) ctx.fillStyle = '#ffdd55';
           else ctx.fillStyle = '#ff4444';
 
           const fillW = Math.floor((lineTension / 100) * barW);
           ctx.fillRect(barX, barY, fillW, barH);
-
-          // Text under mätaren
-          ctx.fillStyle = '#e0f8d0';
-          ctx.font = 'bold 9px Courier New';
-          ctx.textAlign = 'center';
-          const statusStr = fishPulling ? 'FISKEN DRAR! (SLÄPP!)' : `AVSTÅND: ${Math.max(0, Math.ceil(fishDistance))}m`;
-          ctx.fillText(statusStr, w / 2, barY + 22);
         }
       }
 
@@ -1082,7 +1098,7 @@
         requestAnimationFrame(loop);
       }
 
-      // Starta
+      // Start
       updateHUD();
       requestAnimationFrame(loop);
     })();
